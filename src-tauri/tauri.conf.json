@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PortWatch",
+  "version": "0.1.0",
+  "identifier": "dev.portwatch.desktop",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "PortWatch",
+        "width": 920,
+        "height": 640,
+        "minWidth": 560,
+        "minHeight": 420,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "DeveloperTool",
+    "shortDescription": "Find occupied ports",
+    "longDescription": "PortWatch shows listening TCP and UDP ports and the processes that own them.",
+    "copyright": "Copyright PortWatch contributors"
+  }
+}
