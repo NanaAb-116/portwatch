@@ -44,6 +44,7 @@ Source: [sysinfo repository](https://github.com/GuillaumeGomez/sysinfo), [sysinf
 
 - The initial view includes TCP sockets in `LISTEN` and all bound UDP sockets; UDP has no TCP-equivalent listening state.
 - One entry is emitted per associated PID. An unowned/hidden socket is emitted once with no PID.
+- Records with local port `0` are discarded at the final normalization boundary because they do not identify an actionable occupied service port.
 - Deduplication keys include port, protocol, bound address, and PID. This preserves TCP/UDP, IPv4/IPv6, address, and port-sharing distinctions.
 - Results sort deterministically by the same fields.
 - Process name and executable path are optional because a process may exit during refresh or the OS may hide details.

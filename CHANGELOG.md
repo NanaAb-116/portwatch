@@ -4,6 +4,10 @@ All notable changes will be documented here. This project follows [Keep a Change
 
 ## [Unreleased]
 
+### Fixed
+
+- Exclude non-actionable TCP and UDP records whose local port is `0`.
+
 ### Added
 
 - Tauri 2, React, TypeScript, Vite, and pnpm project foundation.

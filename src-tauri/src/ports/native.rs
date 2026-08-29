@@ -128,6 +128,10 @@ fn normalize_entries(entries: Vec<PortEntry>) -> Vec<PortEntry> {
     let mut normalized = Vec::with_capacity(entries.len());
 
     for entry in entries {
+        if entry.port == 0 {
+            continue;
+        }
+
         let key = (entry.port, entry.protocol, entry.address.clone(), entry.pid);
         if seen.insert(key) {
             normalized.push(entry);
@@ -176,6 +180,21 @@ mod tests {
     }
 
     #[test]
+    fn excludes_zero_ports_for_all_protocols_and_keeps_valid_ports() {
+        let result = normalize_entries(vec![
+            entry(0, PortProtocol::Udp, "0.0.0.0", Some(10)),
+            entry(5353, PortProtocol::Udp, "0.0.0.0", Some(10)),
+            entry(0, PortProtocol::Tcp, "::", Some(20)),
+            entry(3000, PortProtocol::Tcp, "127.0.0.1", Some(20)),
+        ]);
+
+        assert_eq!(result.len(), 2);
+        assert_eq!(result[0].port, 3000);
+        assert_eq!(result[1].port, 5353);
+        assert!(result.iter().all(|entry| entry.port != 0));
+    }
+
+    #[test]
     fn removes_exact_duplicates() {
         let duplicate = entry(3000, PortProtocol::Tcp, "127.0.0.1", Some(10));
         let result = normalize_entries(vec![duplicate.clone(), duplicate]);
@@ -184,13 +203,20 @@ mod tests {
 
     #[test]
     fn preserves_protocol_address_family_and_shared_process_distinctions() {
+        let ipv4_first_process = entry(3000, PortProtocol::Tcp, "0.0.0.0", Some(10));
         let result = normalize_entries(vec![
+            ipv4_first_process.clone(),
             entry(3000, PortProtocol::Tcp, "0.0.0.0", Some(10)),
             entry(3000, PortProtocol::Udp, "0.0.0.0", Some(10)),
             entry(3000, PortProtocol::Tcp, "::", Some(10)),
             entry(3000, PortProtocol::Tcp, "0.0.0.0", Some(20)),
         ]);
+
         assert_eq!(result.len(), 4);
+        assert_eq!(result[0], ipv4_first_process);
+        assert_eq!(result[1].pid, Some(20));
+        assert_eq!(result[2].address, "::");
+        assert_eq!(result[3].protocol, PortProtocol::Udp);
     }
 
     #[test]
