@@ -22,6 +22,8 @@ pub struct PortEntry {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub executable_path: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub process_start_time: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub username: Option<String>,
 }
 

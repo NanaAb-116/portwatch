@@ -8,6 +8,7 @@ export type PortEntry = {
   pid?: number;
   processName?: string;
   executablePath?: string;
+  processStartTime?: number;
   username?: string;
 };
 
@@ -17,7 +18,16 @@ export type PortQueryOptions = {
   listeningOnly: boolean;
 };
 
+export type PortSortKey = "port" | "protocol" | "processName" | "pid" | "address";
+
+export type SortDirection = "ascending" | "descending";
+
+export type PortSort = {
+  key: PortSortKey;
+  direction: SortDirection;
+};
+
 export type PortWatchError = {
   code: string;
-  details?: { operation?: string };
+  details?: { operation?: string; pid?: number };
 };

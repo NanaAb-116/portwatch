@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Permissions for the PortWatch main window",
-  "windows": ["main"],
-  "permissions": ["core:default"]
+  "description": "Core event and window metadata permissions for the PortWatch compact and full views; native lifecycle mutations remain behind registered commands",
+  "windows": ["compact", "full"],
+  "permissions": ["core:event:default"]
 }

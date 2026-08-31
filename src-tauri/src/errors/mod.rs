@@ -10,6 +10,10 @@ pub enum PortWatchError {
     PermissionDenied { operation: String },
     #[error("process {pid} no longer exists")]
     ProcessNoLongerExists { pid: u32 },
+    #[error("process identity for PID {pid} changed")]
+    ProcessIdentityChanged { pid: u32 },
+    #[error("process identity for PID {pid} cannot be verified safely")]
+    ProcessIdentityUnverifiable { pid: u32 },
     #[error("port information is unavailable")]
     PortInformationUnavailable,
     #[error("operation is unsupported on this platform")]
@@ -22,8 +26,18 @@ pub enum PortWatchError {
     SelfTermination,
     #[error("failed to terminate PID {pid}")]
     TerminationFailed { pid: u32 },
+    #[error("PID {pid} is still running after graceful termination")]
+    ProcessStillRunning { pid: u32 },
+    #[error("failed to force terminate PID {pid}")]
+    ForceTerminationFailed { pid: u32 },
+    #[error("force termination was not authorized for PID {pid}")]
+    ForceTerminationNotAuthorized { pid: u32 },
     #[error("failed to refresh port information")]
     PortRefreshFailed,
+    #[error("desktop operation failed: {operation}")]
+    DesktopOperationFailed { operation: String },
+    #[error("system operation failed: {operation}")]
+    UnexpectedSystemError { operation: String },
 }
 
 impl From<NetstatError> for PortWatchError {
@@ -72,5 +86,35 @@ mod tests {
             PortWatchError::from(NetstatError::NotAValidSocket),
             PortWatchError::PortRefreshFailed
         );
+    }
+
+    #[test]
+    fn serializes_distinct_process_safety_errors_as_typed_codes() {
+        let cases = [
+            (PortWatchError::SelfTermination, "self_termination"),
+            (
+                PortWatchError::ProcessIdentityChanged { pid: 42 },
+                "process_identity_changed",
+            ),
+            (
+                PortWatchError::ProtectedProcess { pid: 42 },
+                "protected_process",
+            ),
+            (
+                PortWatchError::PermissionDenied {
+                    operation: "terminate_process".into(),
+                },
+                "permission_denied",
+            ),
+            (
+                PortWatchError::ForceTerminationFailed { pid: 42 },
+                "force_termination_failed",
+            ),
+        ];
+
+        for (error, code) in cases {
+            let value = serde_json::to_value(error).unwrap();
+            assert_eq!(value["code"], code);
+        }
     }
 }

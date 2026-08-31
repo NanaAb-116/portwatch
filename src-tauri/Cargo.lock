@@ -2473,13 +2473,17 @@ dependencies = [
 name = "portwatch"
 version = "0.1.0"
 dependencies = [
+ "libc",
  "netstat2",
+ "objc2",
+ "objc2-app-kit",
  "serde",
  "serde_json",
  "sysinfo",
  "tauri",
  "tauri-build",
  "thiserror 2.0.20",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

@@ -119,6 +119,7 @@ fn entry_for_process(
         executable_path: process
             .and_then(|value| value.exe())
             .map(|value| value.to_string_lossy().into_owned()),
+        process_start_time: process.map(|value| value.start_time()),
         username: None,
     }
 }
@@ -162,6 +163,7 @@ mod tests {
             pid,
             process_name: None,
             executable_path: None,
+            process_start_time: None,
             username: None,
         }
     }

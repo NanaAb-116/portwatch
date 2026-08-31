@@ -12,13 +12,30 @@
   "app": {
     "windows": [
       {
-        "label": "main",
+        "label": "compact",
+        "title": "PortWatch Panel",
+        "url": "index.html?view=compact",
+        "width": 400,
+        "height": 560,
+        "resizable": false,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "focus": false,
+        "shadow": true
+      },
+      {
+        "label": "full",
         "title": "PortWatch",
-        "width": 920,
-        "height": 640,
-        "minWidth": 560,
-        "minHeight": 420,
-        "center": true
+        "url": "index.html?view=full",
+        "width": 980,
+        "height": 680,
+        "minWidth": 640,
+        "minHeight": 480,
+        "center": true,
+        "visible": false,
+        "focus": false
       }
     ],
     "security": {
@@ -30,7 +47,7 @@
     "targets": "all",
     "category": "DeveloperTool",
     "shortDescription": "Find occupied ports",
-    "longDescription": "PortWatch shows listening TCP and UDP ports and the processes that own them.",
+    "longDescription": "PortWatch is a tray-first utility that shows listening TCP and UDP ports and the processes that own them.",
     "copyright": "Copyright PortWatch contributors"
   }
 }
