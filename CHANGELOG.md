@@ -4,10 +4,13 @@ All notable changes will be documented here. This project follows [Keep a Change
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-11-08
+## [0.1.1] - 2026-11-08
+
+First public pre-release. The `v0.1.0` tag exists, but its macOS release builds failed and it was never published; its changes are included here.
 
 ### Fixed
 
+- Export Apple signing variables to the release build only when their secrets are configured; empty values made unsigned macOS release builds fail.
 - Exclude non-actionable TCP and UDP records whose local port is `0`.
 - Include the PortWatch application icon in macOS, Windows, and Linux bundles; installed apps previously showed a generic icon.
 - Ad-hoc sign the macOS app bundle when no Developer ID is configured so downloaded Apple Silicon builds have a valid sealed signature.
