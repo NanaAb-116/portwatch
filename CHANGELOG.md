@@ -4,12 +4,14 @@ All notable changes will be documented here. This project follows [Keep a Change
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-08
+
 ### Fixed
 
 - Exclude non-actionable TCP and UDP records whose local port is `0`.
 - Include the PortWatch application icon in macOS, Windows, and Linux bundles; installed apps previously showed a generic icon.
 - Ad-hoc sign the macOS app bundle when no Developer ID is configured so downloaded Apple Silicon builds have a valid sealed signature.
-- Build the Intel macOS release on the supported `macos-15-intel` runner instead of the retired `macos-13` runner.
+- Build macOS releases on the supported `macos-15` (Apple Silicon) and `macos-15-intel` runners instead of the retired `macos-14` and `macos-13` runners.
 - Add a compact-only macOS AppKit foreground/full-screen-Space fallback for deliberate tray activation, while preserving accessory/UIElement operation.
 
 ### Added
