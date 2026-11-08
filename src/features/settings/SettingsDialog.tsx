@@ -49,12 +49,13 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-title"
+        aria-describedby="settings-description"
         onKeyDown={handleKeyDown}
       >
         <div className="settings-heading">
           <div>
             <h2 id="settings-title">Settings</h2>
-            <p>Personalize how PortWatch looks and refreshes.</p>
+            <p id="settings-description">Personalize how PortWatch looks and refreshes.</p>
           </div>
           <button ref={closeRef} className="icon-button" type="button" onClick={onClose} aria-label="Close settings">×</button>
         </div>
@@ -68,8 +69,8 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
 
         <fieldset className="settings-section">
           <legend>Appearance</legend>
-          <span className="settings-label">Theme</span>
-          <div className="choice-group">
+          <span id="settings-theme-label" className="settings-label">Theme</span>
+          <div className="choice-group" role="radiogroup" aria-labelledby="settings-theme-label">
             {THEME_OPTIONS.map((option) => (
               <label
                 key={option.value}
@@ -91,8 +92,8 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
 
         <fieldset className="settings-section">
           <legend>Refresh</legend>
-          <span className="settings-label">Automatic refresh</span>
-          <div className="choice-list">
+          <span id="settings-refresh-label" className="settings-label">Automatic refresh</span>
+          <div className="choice-list" role="radiogroup" aria-labelledby="settings-refresh-label">
             {REFRESH_INTERVAL_OPTIONS.map((option) => (
               <label key={option.value} className="choice-row">
                 <span>{option.label}</span>

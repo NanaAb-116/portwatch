@@ -6,12 +6,22 @@ Record OS version, CPU architecture, desktop environment where applicable, packa
 
 | Platform | Automated status | Phase 2 runtime status | Phase 3 runtime status | Phase 4.1 runtime status |
 | --- | --- | --- | --- | --- |
-| macOS Apple Silicon | Local frontend/Rust tests and production compile pass | Awaiting manual validation | Awaiting manual validation | Awaiting manual validation |
+| macOS Apple Silicon | Local frontend/Rust tests and production compile pass | Passed 2026-11-08 | Passed 2026-11-08 | Awaiting manual validation |
 | macOS Intel | CI matrix configured | Awaiting contributor validation | Awaiting contributor validation | Awaiting contributor validation |
 | Windows | CI matrix configured | Awaiting contributor validation | Awaiting contributor validation | Awaiting contributor validation |
 | Ubuntu Linux | CI matrix configured | Awaiting contributor validation | Awaiting contributor validation | Awaiting contributor validation |
 
 Local nonvisual diagnostics on 2026-08-29 confirmed that `pnpm tauri dev` launches the arm64 binary on the Apple Silicon development host and macOS reports it as application type `UIElement`, consistent with the accessory activation policy. Screen-recording and UI-scripting permissions are unavailable in the development environment, so no visual or interaction checkbox below was marked from those diagnostics.
+
+A nonvisual backend smoke run on 2026-11-08 (macOS Apple Silicon, release build) drove `NativePortProvider` and `NativeProcessController` directly against disposable Python children spawned by the run. The checks passed for the following:
+- TCP listener and UDP socket discovery with the correct PID, name, path, and start time.
+- Refusal of a stale start time.
+- Graceful termination, then the port disappearing on refresh.
+- A safe repeat on an exited process.
+- `StillRunning` for a SIGTERM-ignoring child, then force termination releasing the port.
+- Refusal of the own process, PID 0, and PID 1.
+
+An ad-hoc-signed `.dmg` was also built, and the mounted app passed `codesign --verify --deep --strict`. These confirm backend behavior only; the interface checkboxes below still need a person.
 
 ## Common discovery and interface checks
 
@@ -29,43 +39,53 @@ Local nonvisual diagnostics on 2026-08-29 confirmed that `pnpm tauri dev` launch
 - [ ] Restricted process data is unavailable rather than invented.
 - [ ] Permission and provider failures show safe, actionable messages.
 - [ ] Every control is reachable with the keyboard and has a visible focus indicator.
+- [ ] In both windows, Cmd/Ctrl+F focuses search, Cmd/Ctrl+R refreshes without reloading the window, Up/Down move between search and the **Terminate** buttons, and focus returns to search after a terminated row disappears.
 - [ ] Screen-reader names, result-count announcements, and sortable-header state are sensible.
 - [ ] Light and dark system appearances have sufficient contrast.
 
 ## macOS Apple Silicon
 
-Environment: _not yet recorded_
+Environment: macOS 26.6.2, Apple Silicon (arm64)
 
-Tester/date: Repository owner, 2026-08-29 (partial run)
+Tester/date: Repository owner, 2026-08-29 (partial run); repository owner, 2026-11-08 (full run, including the common checks and the Phase 3 safe-termination checklist on this platform)
 
-Pre-fix observations: the compact window became visible but remained behind another application's active window, and it did not join VS Code's full-screen Space. The macOS adapter now applies compact-only full-screen/other-application collection behavior before explicit AppKit activation and ordering. The foreground/Space checks below remain unchecked until the repository owner repeats them; unit tests do not verify AppKit z-order.
+Keyboard navigation: repository owner, 2026-11-08, installed `.dmg` build. The following passed in both windows:
+- Cmd+F focuses search with a visible focus ring.
+- Up/Down move between search and the **Terminate** buttons.
+- Cmd+R refreshes and keeps the search text.
+- Escape closes the termination dialog without hiding the panel.
+- Focus returns to search after a terminated row disappears.
 
-- [ ] Launch with `pnpm tauri dev` on Apple Silicon.
+VoiceOver and screen-reader checks have not been run yet.
+
+Pre-fix observations: the compact window became visible but remained behind another application's active window, and it did not join VS Code's full-screen Space. The macOS adapter now applies compact-only full-screen/other-application collection behavior before explicit AppKit activation and ordering. The repository owner repeated the foreground/Space checks on 2026-11-08 and they passed; unit tests do not verify AppKit z-order.
+
+- [x] Launch with `pnpm tauri dev` on Apple Silicon.
 - [x] PortWatch icon appears in the menu bar.
-- [ ] No unnecessary permanent Dock icon appears during ordinary tray-only use.
-- [ ] No visible panel or full window appears before activation.
+- [x] No unnecessary permanent Dock icon appears during ordinary tray-only use.
+- [x] No visible panel or full window appears before activation.
 - [x] Clicking the menu-bar icon opens the compact panel when no other application window obscures it.
-- [ ] With another application's normal window active, clicking the menu-bar icon shows the compact panel above that window immediately.
+- [x] With another application's normal window active, clicking the menu-bar icon shows the compact panel above that window immediately.
 - [x] With another application such as VS Code in macOS full-screen mode, clicking the menu-bar icon shows the compact panel above it without returning to the desktop.
-- [ ] From a different macOS Space, clicking the menu-bar icon shows the compact panel on the active Space rather than its previous Space.
+- [x] From a different macOS Space, clicking the menu-bar icon shows the compact panel on the active Space rather than its previous Space.
 - [x] A second click toggles the compact panel closed.
 - [x] Repeated activation reuses one compact window with no duplicates.
 - [x] The compact panel is positioned near the menu-bar item.
-- [ ] The panel remains inside the current screen's visible work area.
+- [x] The panel remains inside the current screen's visible work area.
 - [x] The panel hides when focus moves to another application.
 - [x] Escape hides the compact panel.
-- [ ] Search, TCP/UDP filters, result count, and refresh work in the panel.
-- [ ] Opening the panel fetches current port information every time.
-- [ ] **Open full view** hides the panel and opens the normal inspection window.
-- [ ] The full view renders every record and all five sort columns work in both directions.
-- [ ] The full view remains a normal window: it is not permanently above other applications and does not appear on every Space.
-- [ ] Closing the full view keeps the menu-bar application running.
-- [ ] Reopening the full view reuses it, preserves practical UI state, focuses it, and refreshes data.
-- [ ] Tray **Refresh** refreshes whichever PortWatch view is visible.
-- [ ] Explicit **Quit** exits the tray process completely.
-- [ ] PortWatch relaunches successfully after explicit quit.
-- [ ] Multiple-monitor activation positions and clamps the panel correctly, if multiple displays are available.
-- [ ] Light and dark system appearances render correctly.
+- [x] Search, TCP/UDP filters, result count, and refresh work in the panel.
+- [x] Opening the panel fetches current port information every time.
+- [x] **Open full view** hides the panel and opens the normal inspection window.
+- [x] The full view renders every record and all five sort columns work in both directions.
+- [x] The full view remains a normal window: it is not permanently above other applications and does not appear on every Space.
+- [x] Closing the full view keeps the menu-bar application running.
+- [x] Reopening the full view reuses it, preserves practical UI state, focuses it, and refreshes data.
+- [x] Tray **Refresh** refreshes whichever PortWatch view is visible.
+- [x] Explicit **Quit** exits the tray process completely.
+- [x] PortWatch relaunches successfully after explicit quit.
+- [x] Multiple-monitor activation positions and clamps the panel correctly, if multiple displays are available.
+- [x] Light and dark system appearances render correctly.
 
 ## Windows
 

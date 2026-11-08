@@ -148,4 +148,17 @@ describe("compact panel", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "Settings" })).not.toBeInTheDocument();
   });
+
+  it("closes the termination dialog with Escape without hiding the panel", async () => {
+    const user = userEvent.setup();
+    mockPorts([{ ...entries[0], processStartTime: 420 }]);
+    render(<CompactPanel />);
+    await screen.findByText("vite");
+    await user.click(screen.getByRole("button", { name: "Terminate vite on port 3000" }));
+    expect(screen.getByRole("alertdialog", { name: "Terminate process?" })).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(invokeMock).not.toHaveBeenCalledWith("hide_compact_panel");
+  });
 });

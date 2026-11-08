@@ -45,9 +45,19 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
     "category": "DeveloperTool",
     "shortDescription": "Find occupied ports",
     "longDescription": "PortWatch is a tray-first utility that shows listening TCP and UDP ports and the processes that own them.",
-    "copyright": "Copyright PortWatch contributors"
+    "copyright": "Copyright PortWatch contributors",
+    "macOS": {
+      "signingIdentity": "-"
+    }
   }
 }

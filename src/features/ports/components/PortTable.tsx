@@ -26,7 +26,7 @@ export function PortTable({
 }) {
   return (
     <div className="port-table-wrap">
-      <table className="port-table">
+      <table className="port-table" aria-label="Occupied ports">
         <thead>
           <tr>
             {columns.map((column) => (

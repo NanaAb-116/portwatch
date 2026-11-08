@@ -7,10 +7,15 @@ All notable changes will be documented here. This project follows [Keep a Change
 ### Fixed
 
 - Exclude non-actionable TCP and UDP records whose local port is `0`.
+- Include the PortWatch application icon in macOS, Windows, and Linux bundles; installed apps previously showed a generic icon.
+- Ad-hoc sign the macOS app bundle when no Developer ID is configured so downloaded Apple Silicon builds have a valid sealed signature.
+- Build the Intel macOS release on the supported `macos-15-intel` runner instead of the retired `macos-13` runner.
 - Add a compact-only macOS AppKit foreground/full-screen-Space fallback for deliberate tray activation, while preserving accessory/UIElement operation.
 
 ### Added
 
+- Keyboard shortcuts in both windows: **Cmd+F** / **Ctrl+F** focuses search, **Cmd+R** / **Ctrl+R** refreshes, and **Up**/**Down** move between search and each row's **Terminate** button.
+- Accessible names for the port table, protocol filter group, and settings radio groups; termination confirmations are announced as alert dialogs.
 - A typed, versioned local settings model with safe defaults, partial-value migration, corrupt-data recovery, write-failure feedback, and live synchronization between compact and full windows.
 - System, Light, and Dark appearance choices backed by semantic color tokens; System follows operating-system appearance changes while PortWatch is running.
 - Automatic refresh choices for Off, 5, 10, 30, and 60 seconds, with visibility-aware scheduling, overlap prevention, timer cleanup, failure recovery, and a trailing refresh after successful process termination when needed.
@@ -36,6 +41,9 @@ All notable changes will be documented here. This project follows [Keep a Change
 
 ### Changed
 
+- Focus indicators are solid and meet 3:1 contrast, and secondary text and placeholders meet 4.5:1 contrast in both themes.
+- Screen readers announce only result-count changes, not every background refresh.
+- After a terminated process disappears from the list, keyboard focus returns to search instead of being lost.
 - Native window lifecycle handling now reports visibility to each webview so hidden windows can suspend automatic refresh without changing the established show, focus, workspace, or refresh sequence.
 - Window close requests now hide and reuse PortWatch windows so the tray process keeps running.
 - macOS runs with the supported accessory activation policy for menu-bar-first operation.

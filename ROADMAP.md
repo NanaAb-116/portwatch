@@ -62,12 +62,12 @@ The implementation checklist is complete. Phase 3 remains runtime-unvalidated un
 - [x] Add refresh intervals
 - [x] Add system/light/dark themes
 - [x] Evaluate launch at login
-- [ ] Improve keyboard navigation
-- [ ] Add accessible labels and focus management
-- [ ] Measure idle CPU and memory usage
-- [ ] Add icons and application metadata
+- [x] Improve keyboard navigation
+- [x] Add accessible labels and focus management
+- [x] Measure idle CPU and memory usage (see `docs/performance.md`)
+- [x] Add icons and application metadata
 
-Phase 4.1 is implemented and ready for manual validation. Launch at login was evaluated against the official Tauri 2 autostart plugin and deferred until packaged application paths and startup behavior can be validated on macOS, Windows, and the supported Linux package formats. The unchecked work above remains scoped to later Phase 4.2 and 4.3 slices.
+Phase 4.1 is implemented and ready for manual validation. Launch at login was evaluated against the official Tauri 2 autostart plugin and deferred until packaged application paths and startup behavior can be validated on macOS, Windows, and the supported Linux package formats. Keyboard navigation, accessibility labels and focus management, and idle resource measurement are implemented; their manual keyboard and screen-reader checks are listed in `docs/platform-testing.md`.
 
 ## Phase 5 — Distribution
 
@@ -75,7 +75,7 @@ Phase 4.1 is implemented and ready for manual validation. Launch at login was ev
 - [ ] Produce GitHub Release artifacts
 - [x] Document code signing and notarization
 - [ ] Test clean installations
-- [ ] Add release checklist
+- [x] Add release checklist
 - [ ] Publish `v0.1.0`
 
 ## Later possibilities

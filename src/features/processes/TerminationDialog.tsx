@@ -24,9 +24,10 @@ export function TerminationDialog({
   }, [state.step]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape" && !pending) {
+    if (event.key === "Escape") {
+      // Never let Escape reach the window handler, which would hide the compact panel mid-action.
       event.stopPropagation();
-      onCancel();
+      if (!pending) onCancel();
       return;
     }
     if (event.key !== "Tab") return;
@@ -48,7 +49,7 @@ export function TerminationDialog({
     <div className="dialog-backdrop">
       <div
         className="dialog"
-        role="dialog"
+        role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}

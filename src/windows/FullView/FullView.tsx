@@ -2,8 +2,9 @@ import { PortResults } from "../../features/ports/components/PortResults";
 import { PortTable } from "../../features/ports/components/PortTable";
 import { PortToolbar } from "../../features/ports/components/PortToolbar";
 import { usePortView } from "../../features/ports/hooks/usePortView";
+import { SHORTCUT_MODIFIER, useKeyboardNavigation } from "../../features/ports/hooks/useKeyboardNavigation";
 import { TerminationDialog } from "../../features/processes/TerminationDialog";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SettingsDialog } from "../../features/settings/SettingsDialog";
 
 function formatRefreshTime(value?: Date): string {
@@ -13,6 +14,8 @@ function formatRefreshTime(value?: Date): string {
 export function FullView() {
   const view = usePortView({ sortable: true });
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+  useKeyboardNavigation(searchRef, view.refresh, view.termination.pendingPid);
   return (
     <main className="full-shell">
       <header className="full-header">
@@ -23,12 +26,13 @@ export function FullView() {
         <div className="refresh-group">
           <span>{formatRefreshTime(view.lastRefreshed)}</span>
           <button className="button" type="button" onClick={() => setSettingsOpen(true)}>Settings</button>
-          <button className="button" type="button" onClick={() => void view.refresh()} disabled={view.initialLoading || view.refreshing}>
+          <button className="button" type="button" onClick={() => void view.refresh()} disabled={view.initialLoading || view.refreshing} aria-keyshortcuts={`${SHORTCUT_MODIFIER}+R`}>
             {view.refreshing ? "Refreshing…" : "Refresh"}
           </button>
         </div>
       </header>
       <PortToolbar
+        searchRef={searchRef}
         query={view.query}
         onQueryChange={view.setQuery}
         showTcp={view.showTcp}

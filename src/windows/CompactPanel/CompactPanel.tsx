@@ -3,6 +3,7 @@ import { CompactPortList } from "../../features/ports/components/CompactPortList
 import { PortResults } from "../../features/ports/components/PortResults";
 import { PortToolbar } from "../../features/ports/components/PortToolbar";
 import { usePortView } from "../../features/ports/hooks/usePortView";
+import { SHORTCUT_MODIFIER, useKeyboardNavigation } from "../../features/ports/hooks/useKeyboardNavigation";
 import { hideCompactPanel, openFullView, quitApp } from "../../lib/desktop";
 import { TerminationDialog } from "../../features/processes/TerminationDialog";
 import { SettingsDialog } from "../../features/settings/SettingsDialog";
@@ -11,6 +12,7 @@ export function CompactPanel() {
   const view = usePortView();
   const searchRef = useRef<HTMLInputElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  useKeyboardNavigation(searchRef, view.refresh, view.termination.pendingPid);
 
   useEffect(() => {
     const handleFocus = () => searchRef.current?.focus();
@@ -33,7 +35,7 @@ export function CompactPanel() {
           <div><h1>PortWatch</h1><p>Occupied local ports</p></div>
         </div>
         <div className="compact-header-actions">
-          <button className="icon-button" type="button" onClick={() => void view.refresh()} disabled={view.initialLoading || view.refreshing} aria-label="Refresh ports" title="Refresh ports">
+          <button className="icon-button" type="button" onClick={() => void view.refresh()} disabled={view.initialLoading || view.refreshing} aria-label="Refresh ports" aria-keyshortcuts={`${SHORTCUT_MODIFIER}+R`} title="Refresh ports">
             <span aria-hidden="true">↻</span>
           </button>
           <button className="icon-button" type="button" onClick={() => setSettingsOpen(true)} aria-label="Open settings" title="Settings">

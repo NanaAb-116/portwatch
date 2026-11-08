@@ -72,11 +72,11 @@ describe("full view", () => {
     expect(screen.queryByRole("button", { name: "Force terminate" })).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Terminate vite on port 3000" }));
-    expect(screen.getByRole("dialog", { name: "Terminate process?" })).toHaveTextContent("vite (PID 42) is using port 3000");
+    expect(screen.getByRole("alertdialog", { name: "Terminate process?" })).toHaveTextContent("vite (PID 42) is using port 3000");
     expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus();
     await user.keyboard("{Escape}");
 
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
     expect(invokeMock).not.toHaveBeenCalledWith("terminate_process", expect.anything());
   });
 
@@ -124,7 +124,7 @@ describe("full view", () => {
     await user.click(screen.getByRole("button", { name: "Terminate vite on port 3000" }));
     await user.click(screen.getByRole("button", { name: "Terminate" }));
 
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Terminate vite on port 3000" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Terminate worker on port 9000" })).toBeDisabled();
     expect(screen.getByRole("searchbox")).toBeEnabled();
@@ -151,10 +151,10 @@ describe("full view", () => {
     expect(screen.queryByRole("button", { name: "Force terminate" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Terminate" }));
 
-    expect(await screen.findByRole("dialog", { name: "Process is still running" })).toHaveTextContent("unsaved work");
+    expect(await screen.findByRole("alertdialog", { name: "Process is still running" })).toHaveTextContent("unsaved work");
     expect(screen.getByRole("button", { name: "Cancel" })).toHaveFocus();
     await user.click(screen.getByRole("button", { name: "Force terminate" }));
-    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
     expect(invokeMock).toHaveBeenCalledWith("force_terminate_process", {
       request: {
         target: {
@@ -208,5 +208,76 @@ describe("full view", () => {
     expect(await screen.findByRole("status")).toHaveTextContent("denied permission");
     expect(screen.getByText("vite")).toBeInTheDocument();
     expect(screen.queryByText(/private\/native/)).not.toBeInTheDocument();
+  });
+});
+
+describe("full view keyboard and accessibility", () => {
+  beforeEach(() => {
+    invokeMock.mockReset().mockImplementation((command: string) => command === "list_ports" ? Promise.resolve(entries) : Promise.resolve());
+  });
+
+  it("focuses search with Ctrl+F and refreshes with Ctrl+R", async () => {
+    const user = userEvent.setup();
+    render(<FullView />);
+    await screen.findByText("vite");
+    const search = screen.getByRole("searchbox");
+    expect(search).toHaveAttribute("aria-keyshortcuts", "Control+F");
+    expect(screen.getByRole("button", { name: "Refresh" })).toHaveAttribute("aria-keyshortcuts", "Control+R");
+
+    await user.keyboard("{Control>}f{/Control}");
+    expect(search).toHaveFocus();
+    await user.keyboard("{Control>}r{/Control}");
+    await waitFor(() => expect(invokeMock.mock.calls.filter(([command]) => command === "list_ports")).toHaveLength(2));
+  });
+
+  it("moves between search and row actions with the arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<FullView />);
+    await screen.findByText("vite");
+    screen.getByRole("searchbox").focus();
+
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("button", { name: "Terminate vite on port 3000" })).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("button", { name: "Terminate worker on port 9000" })).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("button", { name: "Terminate worker on port 9000" })).toHaveFocus();
+    await user.keyboard("{ArrowUp}{ArrowUp}");
+    expect(screen.getByRole("searchbox")).toHaveFocus();
+  });
+
+  it("returns focus to search after a terminated row disappears", async () => {
+    const user = userEvent.setup();
+    let listCalls = 0;
+    invokeMock.mockImplementation((command: string) => {
+      if (command === "list_ports") return Promise.resolve(listCalls++ === 0 ? entries : entries.filter((entry) => entry.pid !== 42));
+      if (command === "terminate_process") return Promise.resolve({ status: "terminated" });
+      return Promise.resolve();
+    });
+    render(<FullView />);
+    await screen.findByText("vite");
+
+    await user.click(screen.getByRole("button", { name: "Terminate vite on port 3000" }));
+    await user.click(screen.getByRole("button", { name: "Terminate" }));
+    await waitFor(() => expect(screen.queryByText("vite")).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("searchbox")).toHaveFocus());
+  });
+
+  it("names the table and protocol group and announces only the result count", async () => {
+    render(<FullView />);
+    await screen.findByText("vite");
+    expect(screen.getByRole("table", { name: "Occupied ports" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Protocols" })).toBeInTheDocument();
+    expect(screen.getByText("2 results")).toHaveAttribute("aria-live", "polite");
+  });
+
+  it("labels the settings dialog and its radio groups", async () => {
+    const user = userEvent.setup();
+    render(<FullView />);
+    await screen.findByText("vite");
+    await user.click(screen.getByRole("button", { name: "Settings" }));
+    expect(screen.getByRole("dialog", { name: "Settings" })).toHaveAccessibleDescription("Personalize how PortWatch looks and refreshes.");
+    expect(screen.getByRole("radiogroup", { name: "Theme" })).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup", { name: "Automatic refresh" })).toBeInTheDocument();
   });
 });

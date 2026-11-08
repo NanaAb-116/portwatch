@@ -1,4 +1,5 @@
 import type { RefObject } from "react";
+import { SHORTCUT_MODIFIER } from "../hooks/useKeyboardNavigation";
 
 type PortToolbarProps = {
   query: string;
@@ -29,12 +30,13 @@ export function PortToolbar({
         <input
           ref={searchRef}
           type="search"
+          aria-keyshortcuts={`${SHORTCUT_MODIFIER}+F`}
           placeholder={compact ? "Search ports or processes" : "Search port, process, or PID"}
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
         />
       </label>
-      <div className="protocol-filters" aria-label="Protocols">
+      <div className="protocol-filters" role="group" aria-label="Protocols">
         <button
           className="filter-toggle filter-toggle--tcp"
           type="button"

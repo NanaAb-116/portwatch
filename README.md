@@ -14,7 +14,7 @@ _Screenshot coming after the Phase 2 runtime-validation pass._
 
 | Platform | Build status | Behavior validation |
 | --- | --- | --- |
-| macOS Apple Silicon | CI configured | Phase 2 and Phase 3 manual validation pending |
+| macOS Apple Silicon | CI configured | Phase 2 and Phase 3 manually validated 2026-11-08; Phase 4.1 pending |
 | macOS Intel | CI configured | Contributor validation needed |
 | Windows | CI configured | Contributor validation needed |
 | Ubuntu Linux | CI configured | Contributor validation needed |
@@ -32,6 +32,8 @@ Launch PortWatch and use its menu-bar/system-tray icon. A left click opens the c
 The **Terminate** action first shows a confirmation and requests graceful shutdown. If the exact same process remains alive after a bounded wait, PortWatch offers a separate force-termination warning. It never escalates automatically.
 
 The full view sorts by port, protocol, process, PID, and address. Both views refresh whenever native lifecycle code shows them, and a failed background refresh retains the previous results. Settings persist locally and stay synchronized between open windows. Theme choices are **System** (the default), **Light**, and **Dark**; System follows live operating-system appearance changes. Automatic refresh choices are **Off** (the default), **5**, **10**, **30**, and **60 seconds**. Hidden windows do not run automatic refresh timers, and manual refresh remains available in every mode.
+
+Keyboard: **Cmd+F** (Ctrl+F on Windows and Linux) focuses search, **Cmd+R** (Ctrl+R) refreshes, **Up**/**Down** move between search and each row's **Terminate** button, and **Escape** closes dialogs or hides the compact panel.
 
 ## Development
 

@@ -28,8 +28,9 @@ export function PortResults({
   const stateClass = `state${compact ? " state--compact" : ""}`;
   return (
     <section className="results" aria-busy={initialLoading || refreshing}>
-      <div className="results-summary" aria-live="polite" aria-atomic="true">
-        <span>{visibleCount} {visibleCount === 1 ? "result" : "results"}</span>
+      <div className="results-summary">
+        {/* Only the count is live so background refreshes are not announced every interval. */}
+        <span aria-live="polite" aria-atomic="true">{visibleCount} {visibleCount === 1 ? "result" : "results"}</span>
         {refreshing ? <span className="refresh-status">Refreshing in background…</span> : null}
       </div>
       {error ? (
